@@ -31,16 +31,32 @@ const recipeSeedData: Prisma.RecipeCreateInput[] = [
   // updatedAt   DateTime @updatedAt
   // ingredients Ingredient[]
   {
-    name: "Honey2",
+    name: "Pancakes",
     createdAt: new Date(),
     updatedAt: new Date(),
-    ingredients: { create: [] },
+    ingredients: {
+      create: [],
+    },
+  },
+];
+const ingredientSeedData: Prisma.IngredientCreateInput[] = [
+  {
+    id: "1",
+    name: "Eggs",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
   {
-    name: "Milk2",
+    id: "2",
+    name: "Butter",
     createdAt: new Date(),
     updatedAt: new Date(),
-    ingredients: { create: [] },
+  },
+  {
+    id: "3",
+    name: "Milk",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
 ];
 

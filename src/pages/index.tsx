@@ -4,12 +4,67 @@ import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "../utils/api";
+import Recipe from "../components/recipe";
 
 const Home: NextPage = () => {
   const recipeAll = api.recipe.getAll.useQuery();
-  const recipeIds = recipeAll.data
+  const deleteRecipe = api.recipe.deleteRecipe.useMutation({
+    onMutate: async (toDeleteName) => {
+      await utils.recipe.getAll.cancel();
+      utils.recipe.getAll.setData(undefined, (prevEntries) => {
+        if (prevEntries) {
+          return prevEntries.filter((name) => name !== toDeleteName);
+        } else {
+          return [];
+        }
+      });
+    },
+    onSettled: async () => {
+      await utils.recipe.getAll.invalidate();
+    },
+  });
+
+  const utils = api.useContext();
+  const createRecipe = api.recipe.createRecipe.useMutation({
+    onMutate: async (newRecipe) => {
+      await utils.recipe.getAll.cancel();
+      utils.recipe.getAll.setData(undefined, (prevEntries) => {
+        if (prevEntries) {
+          return [newRecipe, ...prevEntries];
+        } else {
+          return [newRecipe];
+        }
+      });
+    },
+    onSettled: async () => {
+      await utils.recipe.getAll.invalidate();
+    },
+  });
+
+  const recipeNames = recipeAll.data
     ? recipeAll.data.map(({ name }) => name)
     : [];
+
+  const handleSubmitRecipe = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+
+    // Read the form data
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
+
+    createRecipe.mutate({
+      name: formJson.recipeName as string,
+    });
+
+    (e.target as HTMLFormElement).reset();
+  };
+
+  const handleDeleteRecipeClick = (name: string) => {
+    deleteRecipe.mutate({ name });
+  };
 
   return (
     <>
@@ -18,43 +73,49 @@ const Home: NextPage = () => {
         <meta name="description" content="Plan your food for the week" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          {recipeIds.map((name) => {
-            return <p key={name}>name: {name}</p>;
-          })}
-        </div>
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
+      <main
+        className={`
+            flex 
+            h-screen 
+            w-screen
+            flex-col
+            items-center
+            justify-center bg-gray-800
+          `}
+      >
+        <form className="w-full max-w-sm " onSubmit={handleSubmitRecipe}>
+          <div className="flex items-center border-b border-teal-500 py-2">
+            <input
+              className="mr-3 w-full appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-200 focus:outline-none"
+              type="text"
+              name="recipeName"
+              placeholder="Enter Recipe"
+              aria-label="Recipe"
+            />
+            <button
+              className="flex-shrink-0 rounded border-4 border-teal-500 bg-teal-500 py-1 px-2 text-sm text-white hover:border-teal-700 hover:bg-teal-700"
+              type="submit"
             >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
+              +
+            </button>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <AuthShowcase />
-          </div>
+        </form>
+        <ul className="bordder w-full max-w-sm text-white">
+          {recipeNames &&
+            recipeNames.map((recipeName) => {
+              return (
+                <li key={recipeName}>
+                  <Recipe
+                    recipeName={recipeName}
+                    deleteRecipeCallback={handleDeleteRecipeClick}
+                  />
+                </li>
+              );
+            })}
+        </ul>
+        <br />
+        <div className="items-center gap-2">
+          <AuthShowcase />
         </div>
       </main>
     </>
