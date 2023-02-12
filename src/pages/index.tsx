@@ -71,7 +71,9 @@ const Home: NextPage = () => {
     return <p>Loading...</p>;
   }
 
-  console.log(session);
+  console.log({ session });
+  console.log({ status });
+  // const status = "authenticated";
 
   return (
     <>
@@ -90,11 +92,12 @@ const Home: NextPage = () => {
             justify-center bg-gray-800
           `}
       >
-        {status === "unauthenticated" ? (
+        {status === "unauthenticated" && (
           <div className="items-center gap-2">
             <AuthShowcase />
           </div>
-        ) : (
+        )}
+        {status === "authenticated" && (
           <form className="w-full max-w-sm " onSubmit={handleSubmitRecipe}>
             <div className="flex items-center border-b border-teal-500 py-2">
               <input
@@ -136,17 +139,12 @@ export default Home;
 
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
+  console.log({ sessionData });
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl text-white">
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
       </p>
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"

@@ -48,7 +48,6 @@ const Recipe: React.FC<RecipeProps> = ({
     const formData = new FormData(e.target as HTMLFormElement);
 
     const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
 
     createIngredient.mutate({
       recipeName,
