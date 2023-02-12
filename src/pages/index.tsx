@@ -66,6 +66,13 @@ const Home: NextPage = () => {
     deleteRecipe.mutate({ name });
   };
 
+  const { data: session, status } = useSession();
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  console.log(session);
+
   return (
     <>
       <Head>
@@ -83,23 +90,29 @@ const Home: NextPage = () => {
             justify-center bg-gray-800
           `}
       >
-        <form className="w-full max-w-sm " onSubmit={handleSubmitRecipe}>
-          <div className="flex items-center border-b border-teal-500 py-2">
-            <input
-              className="mr-3 w-full appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-200 focus:outline-none"
-              type="text"
-              name="recipeName"
-              placeholder="Enter Recipe"
-              aria-label="Recipe"
-            />
-            <button
-              className="flex-shrink-0 rounded border-4 border-teal-500 bg-teal-500 py-1 px-2 text-sm text-white hover:border-teal-700 hover:bg-teal-700"
-              type="submit"
-            >
-              +
-            </button>
+        {status === "unauthenticated" ? (
+          <div className="items-center gap-2">
+            <AuthShowcase />
           </div>
-        </form>
+        ) : (
+          <form className="w-full max-w-sm " onSubmit={handleSubmitRecipe}>
+            <div className="flex items-center border-b border-teal-500 py-2">
+              <input
+                className="mr-3 w-full appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-200 focus:outline-none"
+                type="text"
+                name="recipeName"
+                placeholder="Enter Recipe"
+                aria-label="Recipe"
+              />
+              <button
+                className="flex-shrink-0 rounded border-4 border-teal-500 bg-teal-500 py-1 px-2 text-sm text-white hover:border-teal-700 hover:bg-teal-700"
+                type="submit"
+              >
+                +
+              </button>
+            </div>
+          </form>
+        )}
         <ul className="bordder w-full max-w-sm text-white">
           {recipeNames &&
             recipeNames.map((recipeName) => {
@@ -114,9 +127,6 @@ const Home: NextPage = () => {
             })}
         </ul>
         <br />
-        <div className="items-center gap-2">
-          <AuthShowcase />
-        </div>
       </main>
     </>
   );
