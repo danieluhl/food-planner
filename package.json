@@ -7,7 +7,6 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "initialize": "prisma db push",
-    "seed": "prisma db seed",
     "migrate": "prisma migrate dev",
     "lint": "next lint",
     "start": "next start"
@@ -47,8 +46,5 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.4.1"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"nodenext\"} prisma/seed.ts"
   }
 }
