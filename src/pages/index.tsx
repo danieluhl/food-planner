@@ -71,10 +71,6 @@ const Home: NextPage = () => {
     return <p>Loading...</p>;
   }
 
-  console.log({ session });
-  console.log({ status });
-  // const status = "authenticated";
-
   return (
     <>
       <Head>

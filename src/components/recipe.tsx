@@ -44,9 +44,7 @@ const Recipe: React.FC<RecipeProps> = ({
 
   const handleSubmitIngredient = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formData = new FormData(e.target as HTMLFormElement);
-
     const formJson = Object.fromEntries(formData.entries());
 
     createIngredient.mutate({

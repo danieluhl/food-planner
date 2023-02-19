@@ -1,3 +1,15 @@
+## Todos
+
+- Save inactive recipes for dropdown
+- Separate recipe management screen (write/delete)
+  - Ingredients can be duplicated becasue they may be slightly different for
+    different recipes but recipes are unique
+- TBD how to handle ingredients that don't have a recipe (milk, eggs, bread,
+  etc.)
+- "this week" shopping list screen
+- Calendar management screen - show the next two weeks starting with today
+- Edit recipe is a popup
+
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
