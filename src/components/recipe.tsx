@@ -12,13 +12,15 @@ const Recipe: React.FC<RecipeProps> = ({
   deleteRecipeCallback,
 }: RecipeProps) => {
   const [showIngredients, setShowIngredients] = useState(false);
-  const allIngredients = api.ingredient.getAll.useQuery({ name: recipeName });
+  const allIngredients = api.ingredient.getByRecipe.useQuery({
+    name: recipeName,
+  });
 
   const utils = api.useContext();
   const createIngredient = api.ingredient.createIngredient.useMutation({
     onMutate: async (newIngredient) => {
-      await utils.ingredient.getAll.cancel();
-      utils.ingredient.getAll.setData(
+      await utils.ingredient.getByRecipe.cancel();
+      utils.ingredient.getByRecipe.setData(
         { name: newIngredient.name },
         (prevEntries) => {
           if (prevEntries) {
@@ -30,7 +32,7 @@ const Recipe: React.FC<RecipeProps> = ({
       );
     },
     onSettled: async () => {
-      await utils.ingredient.getAll.invalidate();
+      await utils.ingredient.getByRecipe.invalidate();
     },
   });
 
@@ -61,12 +63,27 @@ const Recipe: React.FC<RecipeProps> = ({
 
   return (
     <>
-      <div className="bordder flex w-full max-w-sm flex-row justify-between py-2 text-white">
-        <div className="w-full cursor-pointer py-2" onClick={handleRecipeClick}>
+      <div className="bordder mt-2 flex w-full max-w-sm flex-row justify-between rounded py-2 px-2 text-white hover:bg-teal-100">
+        <div
+          className="w-full cursor-pointer py-2 pl-2"
+          onClick={handleRecipeClick}
+        >
           {recipeName}
         </div>
         <button
-          className="h-8 flex-shrink-0 rounded border-4 border-teal-500 bg-teal-500 py-1 px-2 text-center align-middle text-sm text-white hover:border-teal-700 hover:bg-teal-700"
+          className={`h-8
+            flex-shrink-0
+            rounded
+            border-4
+            border-teal-500
+            bg-teal-500
+            px-2
+            text-center
+            align-middle
+            text-sm
+            text-white
+            hover:border-teal-700
+            hover:bg-teal-700`}
           onClick={() => handleDeleteRecipeClick(recipeName)}
         >
           x

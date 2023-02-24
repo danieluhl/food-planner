@@ -3,11 +3,37 @@
 
 // MY APP STUFF
 model Recipe {
-  name        String       @id
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  ingredients Ingredient[]
+  name         String       @id
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  ingredients  Ingredient[]
+  breakfastDay Calendar[]   @relation("breakfast")
+  lunchDay     Calendar[]   @relation("lunch")
+  dinnerDay    Calendar[]   @relation("dinner")
 }
+
+model Calendar {
+  day           Int
+  month         Int
+  year          Int
+  // for comparison when selecting
+  timestamp     DateTime
+  breakfast     Recipe? @relation(name: "breakfast", fields: [breakfastName], references: [name])
+  breakfastName String?
+  lunch         Recipe? @relation(name: "lunch", fields: [lunchName], references: [name])
+  lunchName     String?
+  dinner        Recipe? @relation(name: "dinner", fields: [dinnerName], references: [name])
+  dinnerName    String?
+
+  @@unique([day, month, year])
+}
+
+// todo: is this working?
+// enum Meal {
+//   Breakfast @map("breakfast")
+//   Lunch     @map("lunch")
+//   Dinner    @map("dinner")
+// }
 
 model Ingredient {
   id         Int      @id @default(autoincrement())
