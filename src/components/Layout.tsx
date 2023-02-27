@@ -6,7 +6,7 @@ type LayoutProps = {
   children: JSX.Element;
 };
 export default function Layout({ children }: LayoutProps) {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   if (status === "loading") {
     return <p>Loading...</p>;
   }
