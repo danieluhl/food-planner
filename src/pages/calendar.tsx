@@ -1,25 +1,7 @@
-import { Calendar } from "@prisma/client";
-import next, { type NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { type Calendar } from "@prisma/client";
+import { type NextPage } from "next";
 
 import { api } from "../utils/api";
-
-/*
-
-  Data shape
-
-[{
-  day: "Monday",
-  breakfast: recipeName,
-  lunch: recipeName,
-  dinner: recipeName,
-}, {
-  day: "Tuesday",
-  breakfast: recipeName,
-  lunch: recipeName,
-  dinner: recipeName,
-}]
-  */
 
 const DAY_NAMES = [
   "Sunday",
@@ -31,87 +13,174 @@ const DAY_NAMES = [
   "Saturday",
 ];
 
-// const RecipeDropdown = (recipes) => {
-//   return <select type="dropdown">{recipes.map(recipe => {
-//     return <option value={recipe.name}>{recipe.name}</option>
-//   })}</select>
-// }
+type MealSelectParams = {
+  title: string;
+  recipeNames: string[];
+  onMealChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  selectedMealName: string | null;
+};
+
+const DayMealSelect = ({
+  title,
+  recipeNames,
+  onMealChange,
+  selectedMealName,
+}: MealSelectParams) => {
+  return (
+    <p>
+      {title}
+      <select
+        onChange={onMealChange}
+        className="ml-2"
+        defaultValue={selectedMealName || "-"}
+      >
+        <option key="none" value="-">
+          -
+        </option>
+        {recipeNames.map((name) => {
+          return (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          );
+        })}
+      </select>
+    </p>
+  );
+};
 
 const Day = ({
-  calendarDay: { day, month, year, breakfastName, lunchName, dinnerName },
+  calendarDay: {
+    day,
+    month,
+    year,
+    breakfastName,
+    lunchName,
+    dinnerName,
+    timestamp,
+  },
   recipeNames,
 }: {
   calendarDay: Calendar;
   recipeNames: string[];
 }) => {
   // on select, update breakfast, lunch, or dinner tie
-  const d = new Date();
-  d.setFullYear(year, month, day);
-  const dayName = DAY_NAMES[d.getDay()];
+  const mutateDay = api.calendar.upsertDay.useMutation();
+
+  const onMealChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    meal: string
+  ) => {
+    if (e.target.value !== "none") {
+      console.log("updating: ", timestamp, meal);
+      // update meal selection
+      mutateDay.mutate({
+        day,
+        month,
+        year,
+        breakfastName,
+        lunchName,
+        dinnerName,
+        timestamp: timestamp,
+        [meal]: e.target.value,
+      });
+    }
+  };
+
   return (
-    <div>
-      <h2>{dayName}</h2>
+    <div className="block max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+      <h2>
+        {timestamp.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "short",
+          day: "numeric",
+        })}
+      </h2>
       <hr />
-      <p>
-        Breakfast:{" "}
-        <select>
-          {recipeNames.map((name) => {
-            return (
-              <option key={name} selected={name === breakfastName} value={name}>
-                {name}
-              </option>
-            );
-          })}
-        </select>
-      </p>
-      <p>
-        Lunch:
-        <select>
-          {recipeNames.map((name) => {
-            return (
-              <option key={name} selected={name === lunchName} value={name}>
-                {name}
-              </option>
-            );
-          })}
-        </select>
-      </p>
-      <p>
-        Dinner:
-        <select>
-          {recipeNames.map((name) => {
-            return (
-              <option key={name} selected={name === dinnerName} value={name}>
-                {name}
-              </option>
-            );
-          })}
-        </select>
-      </p>
+      <DayMealSelect
+        title="Breakfast"
+        recipeNames={recipeNames}
+        selectedMealName={breakfastName}
+        onMealChange={(e) => onMealChange(e, "breakfastName")}
+      />
+      <DayMealSelect
+        title="Lunch"
+        recipeNames={recipeNames}
+        selectedMealName={lunchName}
+        onMealChange={(e) => onMealChange(e, "lunchName")}
+      />
+      <DayMealSelect
+        title="Dinner"
+        recipeNames={recipeNames}
+        selectedMealName={dinnerName}
+        onMealChange={(e) => onMealChange(e, "dinnerName")}
+      />
     </div>
   );
 };
 
 // this page shows recipes for the next two weeks
-const CalendarPage: NextPage = (weekRecipes) => {
-  const { status } = useSession();
-
+const CalendarPage: NextPage = () => {
   // get all calendar entries for today and later
-  const calendarDays = api.calendar.getFuture.useQuery().data || [];
+  const getDaysQuery = api.calendar.getNextWeekDays.useQuery();
+  let calendarDays = getDaysQuery.data;
+  if (calendarDays == null) {
+    calendarDays = [];
+  }
 
+  const insertDay = api.calendar.upsertDay.useMutation();
   const allRecipies = api.recipe.getAll.useQuery();
   const recipeNames = allRecipies.data
     ? allRecipies.data.map(({ name }) => name)
     : [];
 
-  // todo: rename timestamp because it's a date object
-  console.log({ calendarDays });
-  const latestTimestamp = calendarDays
-    .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())[0]
-    .timestamp.getTime();
-  const nextDay = new Date(latestTimestamp);
-  nextDay.setDate(nextDay.getDate() + 1);
+  const utils = api.useContext();
 
+  // todo: rename timestamp because it's a date object
+  const handleAddDayClick = () => {
+    let nextDay = new Date();
+
+    if (calendarDays.length > 0) {
+      const sortedCalendarDays = calendarDays.sort(
+        (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+      );
+      const firstTimestamp = sortedCalendarDays.at(0)?.timestamp;
+
+      if (firstTimestamp != null) {
+        nextDay = new Date(firstTimestamp.getTime());
+      }
+    }
+    // set to the next available day or tomorrow
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    console.log("inserting");
+    console.log({
+      day: nextDay.getDate(),
+      month: nextDay.getMonth(),
+      year: nextDay.getFullYear(),
+      breakfastName: null,
+      lunchName: null,
+      dinnerName: null,
+      timestamp: nextDay,
+    });
+    insertDay.mutate(
+      {
+        day: nextDay.getDate(),
+        month: nextDay.getMonth(),
+        year: nextDay.getFullYear(),
+        breakfastName: null,
+        lunchName: null,
+        dinnerName: null,
+        timestamp: nextDay,
+      },
+      {
+        onSuccess: async (data) => {
+          console.log({ data });
+          utils.calendar.getNextWeekDays.invalidate();
+        },
+      }
+    );
+  };
   return (
     <div>
       {calendarDays.map((calendarDay) => {
@@ -124,18 +193,12 @@ const CalendarPage: NextPage = (weekRecipes) => {
           />
         );
       })}
-      <Day
-        recipeNames={recipeNames}
-        calendarDay={{
-          day: nextDay.getDay() + 1,
-          month: nextDay.getMonth(),
-          year: nextDay.getYear(),
-          timestamp: nextDay,
-          breakfastName: null,
-          lunchName: null,
-          dinnerName: null,
-        }}
-      />
+      <button
+        onClick={handleAddDayClick}
+        className="m-4 rounded-md border border-gray-300 px-4 py-2"
+      >
+        +
+      </button>
     </div>
   );
 };

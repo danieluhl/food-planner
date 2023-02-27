@@ -17,15 +17,16 @@ model Calendar {
   month         Int
   year          Int
   // for comparison when selecting
-  timestamp     DateTime
-  breakfast     Recipe? @relation(name: "breakfast", fields: [breakfastName], references: [name])
+  timestamp     DateTime @id
+  breakfast     Recipe?  @relation(name: "breakfast", fields: [breakfastName], references: [name])
   breakfastName String?
-  lunch         Recipe? @relation(name: "lunch", fields: [lunchName], references: [name])
+  lunch         Recipe?  @relation(name: "lunch", fields: [lunchName], references: [name])
   lunchName     String?
-  dinner        Recipe? @relation(name: "dinner", fields: [dinnerName], references: [name])
+  dinner        Recipe?  @relation(name: "dinner", fields: [dinnerName], references: [name])
   dinnerName    String?
 
   @@unique([day, month, year])
+  @@unique(timestamp)
 }
 
 // todo: is this working?
@@ -40,8 +41,8 @@ model Ingredient {
   name       String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  Recipe     Recipe?  @relation(fields: [recipeName], references: [name])
-  recipeName String?
+  Recipe     Recipe  @relation(fields: [recipeName], references: [name])
+  recipeName String
 }
 
 // NOT MY STUFF
