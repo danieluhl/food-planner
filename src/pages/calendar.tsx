@@ -3,16 +3,6 @@ import { type NextPage } from "next";
 
 import { api } from "../utils/api";
 
-const DAY_NAMES = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
 type MealSelectParams = {
   title: string;
   recipeNames: string[];
@@ -185,11 +175,11 @@ const CalendarPage: NextPage = () => {
     <main
       className={`
             flex 
-            h-screen 
-            w-screen
-            flex-col
+            flex-row
+            flex-wrap
             items-center
-            justify-center bg-gray-800
+            justify-center
+            bg-gray-800
           `}
     >
       {calendarDays.map((calendarDay) => {

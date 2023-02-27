@@ -16,7 +16,19 @@ export default function Layout({ children }: LayoutProps) {
     <>
       <Header />
       {isAuthenticated ? (
-        <main>{children}</main>
+        <main
+          className={`     
+          flex 
+          h-screen
+          w-screen
+          flex-row
+          flex-wrap
+          items-center
+          justify-center  
+          bg-gray-800`}
+        >
+          {children}
+        </main>
       ) : (
         <div className="items-center gap-2">
           <AuthShowcase />
