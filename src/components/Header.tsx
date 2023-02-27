@@ -18,7 +18,7 @@ export default function Header() {
             <Link href="/calendar">Calendar</Link>
           </li>
           <li className="border-r border-pink-300 px-5 py-3 text-2xl">
-            <Link href="/calendar">Ingredients</Link>
+            <Link href="/">Ingredients</Link>
           </li>
         </ul>
       </header>

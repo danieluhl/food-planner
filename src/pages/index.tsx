@@ -24,36 +24,47 @@ const Home: NextPage = () => {
 
   const ingredientsByRecipe: Record<string, string[]> = allIngredients.reduce(
     (acc: { [key: string]: string[] }, { recipeName, name }) => {
-      if (recipeName) {
-        const recipe: string[] = acc[recipeName] || [];
-        recipe.push(name);
-      }
+      acc[recipeName] = acc[recipeName] || [];
+      acc[recipeName]?.push(name);
       return acc;
     },
     {}
   );
 
   return (
-    <div>
+    <main
+      className={`
+            flex 
+            h-screen 
+            w-screen
+            flex-col
+            items-center
+            justify-center bg-gray-800
+          `}
+    >
       {Object.entries(ingredientsByRecipe).map(([recipe, ingredients]) => {
         return (
           <div
-            className="m-3 rounded-md border border-gray-300 bg-gray-200 p-2 "
+            className="m-3 rounded-md border border-teal-500 px-4 py-2"
             key={`${recipe}`}
           >
-            <h2 className="py-1 px-2 text-center text-lg text-gray-500">
+            <h2 className="border-b border-teal-500 py-1 px-2 text-center text-lg text-white">
               {recipe}
             </h2>
-            <hr />
-            <ul className="list-inside list-disc">
+            <ul className="pt-2 text-white">
               {ingredients.map((ingredient) => {
-                return <li key={ingredient}>{ingredient}</li>;
+                return (
+                  <li key={ingredient}>
+                    <input type="checkbox" className="mr-2" />
+                    {ingredient}
+                  </li>
+                );
               })}
             </ul>
           </div>
         );
       })}
-    </div>
+    </main>
   );
 };
 export default Home;

@@ -31,7 +31,7 @@ const DayMealSelect = ({
       <p className="w-2/4">{title}</p>
       <select
         onChange={onMealChange}
-        className="ml-2"
+        className="ml-2 bg-gray-800"
         defaultValue={selectedMealName || "-"}
       >
         <option key="none" value="-">
@@ -88,15 +88,14 @@ const Day = ({
   };
 
   return (
-    <div className="my-2 mx-2 block max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow">
-      <h2>
+    <div className="my-2 mx-2 block max-w-sm rounded-lg border border-teal-500 p-6 text-white shadow">
+      <h2 className="border-b border-teal-500 py-2">
         {timestamp.toLocaleDateString("en-US", {
           weekday: "long",
           month: "short",
           day: "numeric",
         })}
       </h2>
-      <hr />
       <DayMealSelect
         title="Breakfast"
         recipeNames={recipeNames}
@@ -183,7 +182,16 @@ const CalendarPage: NextPage = () => {
     );
   };
   return (
-    <div>
+    <main
+      className={`
+            flex 
+            h-screen 
+            w-screen
+            flex-col
+            items-center
+            justify-center bg-gray-800
+          `}
+    >
       {calendarDays.map((calendarDay) => {
         const { day, month, year } = calendarDay;
         return (
@@ -196,11 +204,11 @@ const CalendarPage: NextPage = () => {
       })}
       <button
         onClick={handleAddDayClick}
-        className="m-4 rounded-md border border-gray-300 px-4 py-2"
+        className="m-4 rounded-md border border-teal-500 px-4 py-2 text-white"
       >
         +
       </button>
-    </div>
+    </main>
   );
 };
 
