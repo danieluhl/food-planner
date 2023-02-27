@@ -63,7 +63,7 @@ const Recipe: React.FC<RecipeProps> = ({
 
   return (
     <>
-      <div className="bordder mt-2 flex w-full max-w-sm flex-row justify-between rounded py-2 px-2 text-white hover:bg-teal-100">
+      <div className="bordder mt-2 flex w-full max-w-sm flex-row justify-between rounded py-2 px-2 text-white hover:bg-teal-900">
         <div
           className="w-full cursor-pointer py-2 pl-2"
           onClick={handleRecipeClick}

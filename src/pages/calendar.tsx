@@ -27,8 +27,8 @@ const DayMealSelect = ({
   selectedMealName,
 }: MealSelectParams) => {
   return (
-    <p>
-      {title}
+    <p className="justify-arround my-1 flex w-2/4 min-w-full max-w-xs flex-row py-1 px-2">
+      <p className="w-2/4">{title}</p>
       <select
         onChange={onMealChange}
         className="ml-2"
@@ -88,7 +88,7 @@ const Day = ({
   };
 
   return (
-    <div className="block max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+    <div className="my-2 mx-2 block max-w-sm rounded-lg border border-gray-200 bg-white p-6 shadow">
       <h2>
         {timestamp.toLocaleDateString("en-US", {
           weekday: "long",
