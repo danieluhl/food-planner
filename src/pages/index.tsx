@@ -12,25 +12,34 @@ const Home: NextPage = () => {
     return [cal.breakfastName, cal.lunchName, cal.dinnerName].filter(Boolean);
   });
 
-  const allIngredients =
+  type IngredientNames = {
+    name: string;
+    recipeName: string;
+  };
+
+  const allIngredients: IngredientNames[] =
     api.ingredient.getByRecipes.useQuery({
       recipes,
     }).data || [];
-  const ingredientsByRecipe = allIngredients.reduce(
-    (acc, { recipeName, name }) => {
-      acc[recipeName] ??= [];
-      acc[recipeName].push(name);
+
+  const ingredientsByRecipe: Record<string, string[]> = allIngredients.reduce(
+    (acc: { [key: string]: string[] }, { recipeName, name }) => {
+      if (recipeName) {
+        const recipe: string[] = acc[recipeName] || [];
+        recipe.push(name);
+      }
       return acc;
     },
     {}
   );
+
   return (
     <div>
       {Object.entries(ingredientsByRecipe).map(([recipe, ingredients]) => {
         return (
           <div
             className="m-3 rounded-md border border-gray-300 bg-gray-200 p-2 "
-            key={`${recipe}${ingredients[0]}`}
+            key={`${recipe}`}
           >
             <h2 className="py-1 px-2 text-center text-lg text-gray-500">
               {recipe}

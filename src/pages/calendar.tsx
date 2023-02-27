@@ -140,7 +140,7 @@ const CalendarPage: NextPage = () => {
   const handleAddDayClick = () => {
     let nextDay = new Date();
 
-    if (calendarDays.length > 0) {
+    if (calendarDays && calendarDays.length > 0) {
       const sortedCalendarDays = calendarDays.sort(
         (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
       );
@@ -174,9 +174,10 @@ const CalendarPage: NextPage = () => {
         timestamp: nextDay,
       },
       {
-        onSuccess: async (data) => {
-          console.log({ data });
-          utils.calendar.getNextWeekDays.invalidate();
+        onSuccess: () => {
+          utils.calendar.getNextWeekDays.invalidate().catch((e) => {
+            console.log(e);
+          });
         },
       }
     );
