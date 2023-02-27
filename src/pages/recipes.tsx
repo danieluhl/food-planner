@@ -96,18 +96,7 @@ const RecipesPage: NextPage = () => {
               aria-label="Recipe"
             />
             <button
-              className={`flex-shrink-0
-                rounded
-                border-4
-                border-teal-500
-                bg-teal-500
-                py-1
-                px-2
-                text-sm
-                text-white
-                hover:border-teal-700
-                hover:bg-teal-700
-                `}
+              className="m-4 rounded-md border border-teal-500 px-4 py-2 text-white hover:bg-teal-400"
               type="submit"
             >
               +
