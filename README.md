@@ -1,6 +1,6 @@
 ## Todos
 
-- Save inactive recipes for dropdown.
+- Save inactive recipes for dropdown
 - Separate recipe management screen (write/delete)
   - Ingredients can be duplicated becasue they may be slightly different for
     different recipes but recipes are unique
