@@ -1,77 +1,58 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// MY APP STUFF
-model Recipe {
-  name         String       @id
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  ingredients  Ingredient[]
-  breakfastDay Calendar[]   @relation("breakfast")
-  lunchDay     Calendar[]   @relation("lunch")
-  dinnerDay    Calendar[]   @relation("dinner")
-}
-
-model Calendar {
-  day           Int
-  month         Int
-  year          Int
-  // for comparison when selecting
-  timestamp     DateTime @id
-  breakfast     Recipe?  @relation(name: "breakfast", fields: [breakfastName], references: [name])
-  breakfastName String?
-  lunch         Recipe?  @relation(name: "lunch", fields: [lunchName], references: [name])
-  lunchName     String?
-  dinner        Recipe?  @relation(name: "dinner", fields: [dinnerName], references: [name])
-  dinnerName    String?
-
-  @@unique([day, month, year])
-  @@unique(timestamp)
-}
-
-// todo: is this working?
-// enum Meal {
-//   Breakfast @map("breakfast")
-//   Lunch     @map("lunch")
-//   Dinner    @map("dinner")
-// }
-
-model Ingredient {
-  id         Int      @id @default(autoincrement())
-  name       String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Recipe     Recipe   @relation(fields: [recipeName], references: [name])
-  recipeName String
-}
-
-// NOT MY STUFF
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-  // Further reading:
-  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
 }
 
-// Necessary for Next auth
+model Recipe {
+  name         String       @id
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  breakfastDay Calendar[]   @relation("breakfast")
+  dinnerDay    Calendar[]   @relation("dinner")
+  lunchDay     Calendar[]   @relation("lunch")
+  ingredients  Ingredient[]
+}
+
+model Calendar {
+  day           Int
+  month         Int
+  year          Int
+  timestamp     DateTime @id @unique
+  breakfastName String?
+  lunchName     String?
+  dinnerName    String?
+  breakfast     Recipe?  @relation("breakfast", fields: [breakfastName], references: [name])
+  dinner        Recipe?  @relation("dinner", fields: [dinnerName], references: [name])
+  lunch         Recipe?  @relation("lunch", fields: [lunchName], references: [name])
+
+  @@unique([day, month, year])
+}
+
+model Ingredient {
+  id         Int      @id @default(autoincrement())
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  recipeName String
+  Recipe     Recipe   @relation(fields: [recipeName], references: [name])
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
