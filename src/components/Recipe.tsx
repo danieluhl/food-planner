@@ -1,4 +1,3 @@
-import { NextComponentType, type NextPage } from "next";
 import { useState } from "react";
 
 import { api } from "../utils/api";
@@ -63,30 +62,18 @@ const Recipe: React.FC<RecipeProps> = ({
 
   return (
     <>
-      <div className="bordder mt-2 flex w-full max-w-sm flex-row justify-between rounded py-2 px-2 text-white hover:bg-teal-100">
+      <div className="mt-2 flex w-full max-w-sm flex-row justify-between rounded border border-gray-800 py-2 px-2 text-white hover:border hover:border-teal-900">
         <div
-          className="w-full cursor-pointer py-2 pl-2"
+          className="w-full cursor-pointer py-2 pl-2 text-2xl"
           onClick={handleRecipeClick}
         >
           {recipeName}
         </div>
         <button
-          className={`h-8
-            flex-shrink-0
-            rounded
-            border-4
-            border-teal-500
-            bg-teal-500
-            px-2
-            text-center
-            align-middle
-            text-sm
-            text-white
-            hover:border-teal-700
-            hover:bg-teal-700`}
+          className="m-4 rounded-md border border-teal-500 px-4 py-2 text-white hover:bg-teal-400"
           onClick={() => handleDeleteRecipeClick(recipeName)}
         >
-          x
+          <span className="inline-block rotate-45">+</span>
         </button>
       </div>
       {showIngredients && (
