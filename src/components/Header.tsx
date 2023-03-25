@@ -1,3 +1,4 @@
+import { SignedIn, UserButton, SignedOut, SignInButton } from "@clerk/nextjs";
 import Head from "next/head";
 import Link from "next/link";
 
@@ -9,6 +10,9 @@ export default function Header() {
         <meta name="description" content="Plan your food for the week" />
       </Head>
       <header className="border-b border-teal-500 bg-gray-800 py-3 text-white">
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
         <ul className="flex flex-row">
           <li>
             <Link
@@ -33,6 +37,11 @@ export default function Header() {
             >
               Ingredients
             </Link>
+          </li>
+          <li className="pl-5">
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </li>
         </ul>
       </header>
